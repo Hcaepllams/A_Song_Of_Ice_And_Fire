@@ -1,0 +1,7 @@
+﻿## Interface: 11302
+## Title: A Song of Ice and Fire
+## Author: Guuours
+## Notes: Tries to cast proper spell according to your talent!
+## Version: 0.0.1
+
+Main.lua
