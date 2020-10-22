@@ -1,23 +1,23 @@
 ﻿local frame = CreateFrame("Frame")
-
+frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
+frame:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("BAG_UPDATE")
-frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 frame:SetScript("OnEvent", function(self, event, ...)
 	if (UnitClass("player") == "法师") then
 		if (event == "ADDON_LOADED") then
-			MakeGemMacro()
+			MakeEatFoodMacro()
 			MakeBoltMacro()
 		end
 	
 		if (event == "BAG_UPDATE") then
-			MakeGemMacro()
+			MakeEatFoodMacro()
 		end
 	
-		if (event == "CHARACTER_POINTS_CHANGED") then
+		if (event == "CHARACTER_POINTS_CHANGED" or event == "ACTIONBAR_PAGE_CHANGED") then
 			MakeBoltMacro()
 		end
-	end
+	end	
 end)
 
 function MakeBoltMacro()
@@ -26,35 +26,37 @@ function MakeBoltMacro()
 	local n3, t3, p3, f3 = GetTalentTabInfo(3)
 --fire
 	if (p2 > p3) then
-		UpdateMacro(macroName, "spell_fire_firebolt02", "火球术")
+		UpdateMacro("IOF", "spell_fire_firebolt", "火球术", "/cast ")
+		UpdateMacro("IOF2", "spell_frost_frostbolt02", "寒冰箭", "/cast ")
 --ice
 	else
-		UpdateMacro(macroName, "spell_frost_frostbolt02", "寒冰箭")
+		UpdateMacro("IOF", "spell_frost_frostbolt02", "寒冰箭", "/cast ")
+		UpdateMacro("IOF2", "spell_fire_firebolt", "火球术", "/cast ")
 	end
 end
 
-function MakeGemMacro()
-	local macroName = "GEM"
-	local r = GetItemCount(8008)
-	local c = GetItemCount(8007)
-	local j = GetItemCount(5513)
---ruby
-	if (r == 0) then
-		UpdateMacro(macroName, "inv_misc_gem_ruby_01", "制造魔法红宝石")
---citrine
-	elseif (c == 0) then
-		UpdateMacro(macroName, "inv_misc_gem_opal_01", "制造魔法黄水晶")
---jade
-	elseif (j == 0) then
-		UpdateMacro(macroName, "inv_misc_gem_emerald_02", "制造魔法翡翠")
+function MakeEatFoodMacro()
+	local water = GetItemCount(8079)
+	local food = GetItemCount(8076)
+
+	if (water == 0) then
+		UpdateMacro("喝水", "inv_drink_18", "奥特兰克魔法点心", "/use ")
+	else
+		UpdateMacro("喝水", "inv_drink_18", "魔法晶水", "/use ")
+	end
+
+	if (food == 0) then
+		UpdateMacro("面包", "inv_misc_food_33", "奥特兰克魔法点心", "/use ")
+	else
+		UpdateMacro("面包", "inv_misc_food_33", "魔法甜面包", "/use ")
 	end
 end
 
-function UpdateMacro(name, icon, spell)
+function UpdateMacro(name, icon, spell, cmd)
 	local macroId = GetMacroIndexByName(name)
 	if (macroId == 0) then
-		CreateMacro(name, icon, "/cast " .. spell, true)
+		CreateMacro(name, icon, cmd .. spell, false)
 	else
-		EditMacro(name, name, icon, "/cast " .. spell, true)
+		EditMacro(name, name, icon, cmd .. spell, false)
 	end
 end
